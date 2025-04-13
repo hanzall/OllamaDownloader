@@ -142,6 +142,7 @@ The Ollama Model Downloader script automates the process of downloading models f
    - This allows the script to use the local file for subsequent operations, reducing the need for repeated downloads.
 
 3. **Using the Model List**:
+   - The script beautifully displays models with a number next to them, making it easy to identify and select models.
    - Users can filter models by entering keywords or parameters, and the script will display matching models.
    - Users can select a model to download by entering its corresponding number from the displayed list.
 
@@ -149,12 +150,21 @@ The Ollama Model Downloader script automates the process of downloading models f
    - The script checks for models already available locally using the `ollama list` command.
    - Models that are already downloaded are highlighted in the list, helping users avoid redundant downloads.
 
+5. **Model Selection and Download Management**:
    - Users can manage downloading models by selecting from the list of available models displayed by the script.
    - The script ensures that only models available in the Ollama library are presented for download.
+
+6. **Sequential Model Downloading**:
+   - Models are downloaded one by one, ensuring that each download is completed before starting the next.
+   - This approach helps manage system resources effectively and provides clear feedback for each model's download status.
 
 7. **Handling Download Interruptions**:
    - If the download process is interrupted, the script automatically retries the download until it succeeds.
    - This ensures a reliable download process, even in the face of network issues or other interruptions.
+
+8. **Post-Download Options**:
+   - After downloading a model, users can choose to hibernate the system.
+   - The script provides a countdown before hibernation, allowing users to cancel if needed.
 
 This script is particularly useful for managing and downloading large sets of models efficiently, with options to customize the download process and manage local storage.
 
