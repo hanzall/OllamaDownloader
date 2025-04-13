@@ -170,7 +170,6 @@ def main():
                 os.system('systemctl hibernate')
         except KeyboardInterrupt:
             print("\nHibernate cancelled.")
-
     # Ask the user if they want to download another model
     another_choice = input("\nDo you want to download another model? (Y/N, default: N): ").strip().upper()
     if another_choice == 'Y':
@@ -343,9 +342,9 @@ def showHelp():
     )
     print(help_message)
 
-
-
-
 if __name__ == "__main__":
-
-    main()
+    try:
+        main()
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        input("Press Enter to close the program...")
