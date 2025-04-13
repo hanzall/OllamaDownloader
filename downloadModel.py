@@ -5,9 +5,18 @@ import http.client
 import urllib.parse
 import subprocess
 from math import ceil
+import sys
+
+
+# Determine the base directory
+if getattr(sys, 'frozen', False):
+    # If the application is frozen (running as an executable)
+    current_dir = os.path.dirname(sys.executable)
+else:
+    # If the application is running as a script
+    current_dir = os.path.dirname(__file__)
 
 # Define the local file to save the downloaded web page
-current_dir = os.path.dirname(__file__)
 web_page_file = os.path.join(current_dir, "modelListPage.html")
 
 def main():
