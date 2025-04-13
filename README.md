@@ -11,11 +11,13 @@ This script is designed to download models from the Ollama library. It provides 
 - **Retry Mechanism for Downloads**: Automatically retries failed downloads up to three times with a 10-second delay between attempts. Skips the model if retries are exhausted and continues with the next one.
 - **Enhanced Download Feedback**: Provides detailed feedback on download status, including the current model being downloaded, number of attempts, and success or failure details.
 - **Hibernate Option**: Optionally hibernate the system after downloading, with a countdown to cancel if needed.
+- **No External Dependencies for HTTP Requests**: The script now uses Python's built-in `http.client` and `urllib` modules for fetching model lists, eliminating the need for the `requests` library.
 
 ## Requirements
 - Python 3.x
-- `requests` library
 - `ollama` command-line tool
+
+*Note: The `requests` library is no longer required as the script now uses Python's built-in `http.client` and `urllib` modules for HTTP requests.*
 
 ## Installation
 ### Windows
@@ -28,11 +30,6 @@ This script is designed to download models from the Ollama library. It provides 
    git clone <repository-url>
    cd <repository-directory>
    ```
-4. **Install Required Packages**:
-   Run the following command to install the necessary Python packages:
-   ```bash
-   pip install -r requirements.txt
-   ```
 
 #### Option 2: Without Using Git
 1. **Install Python**: Download and install Python from the [official website](https://www.python.org/downloads/). Ensure you check the option to add Python to your PATH during installation.
@@ -44,11 +41,6 @@ This script is designed to download models from the Ollama library. It provides 
    Open Command Prompt and navigate to the extracted directory:
    ```bash
    cd <extracted-directory>
-   ```
-4. **Install Required Packages**:
-   Run the following command to install the necessary Python packages:
-   ```bash
-   pip install -r requirements.txt
    ```
 
 ### Linux
@@ -72,11 +64,6 @@ This script is designed to download models from the Ollama library. It provides 
    git clone <repository-url>
    cd <repository-directory>
    ```
-4. **Install Required Packages**:
-   Run the following command to install the necessary Python packages:
-   ```bash
-   pip3 install -r requirements.txt
-   ```
 
 #### Option 2: Without Using Git
 1. **Install Python**: Verify Python installation as described above. If needed, install it using your package manager.
@@ -88,11 +75,6 @@ This script is designed to download models from the Ollama library. It provides 
    Open a terminal and navigate to the extracted directory:
    ```bash
    cd <extracted-directory>
-   ```
-4. **Install Required Packages**:
-   Run the following command to install the necessary Python packages:
-   ```bash
-   pip3 install -r requirements.txt
    ```
 
 ## Usage
