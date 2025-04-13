@@ -142,7 +142,6 @@ The Ollama Model Downloader script automates the process of downloading models f
    - This allows the script to use the local file for subsequent operations, reducing the need for repeated downloads.
 
 3. **Using the Model List**:
-   - The script extracts model names and parameters from the HTML content.
    - Users can filter models by entering keywords or parameters, and the script will display matching models.
    - Users can select a model to download by entering its corresponding number from the displayed list.
 
@@ -150,11 +149,6 @@ The Ollama Model Downloader script automates the process of downloading models f
    - The script checks for models already available locally using the `ollama list` command.
    - Models that are already downloaded are highlighted in the list, helping users avoid redundant downloads.
 
-5. **Post-Download Options**:
-   - After downloading a model, users can choose to hibernate the system.
-   - The script provides a countdown before hibernation, allowing users to cancel if needed.
-
-6. **Model Selection and Download Management**:
    - Users can manage downloading models by selecting from the list of available models displayed by the script.
    - The script ensures that only models available in the Ollama library are presented for download.
 
