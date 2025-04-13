@@ -1,7 +1,8 @@
 import os
 import re
 import time
-import requests
+import http.client
+import urllib.parse
 import subprocess
 from math import ceil
 
@@ -190,15 +191,21 @@ def get_model_list():
     url = "https://ollama.com/library?sort=newest"
     print(f"Fetching model list from {url}...")
     try:
-        response = requests.get(url)
-        response.raise_for_status()
+        parsed_url = urllib.parse.urlparse(url)
+        conn = http.client.HTTPSConnection(parsed_url.netloc)
+        conn.request("GET", parsed_url.path + "?" + parsed_url.query)
+        response = conn.getresponse()
+        if response.status != 200:
+            raise Exception(f"HTTP error: {response.status} {response.reason}")
+        html_content = response.read().decode('utf-8')
+        conn.close()
         
         # Save the entire web page to a local file, overwriting if it exists
         with open(web_page_file, 'w', encoding='utf-8') as f:
-            f.write(response.text)
+            f.write(html_content)
         print(f"Web page saved to {web_page_file}.")
         
-        return response.text
+        return html_content
     except Exception as e:
         print(f"Failed to fetch model list: {e}")
         exit(1)
