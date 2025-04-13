@@ -171,6 +171,13 @@ def main():
         except KeyboardInterrupt:
             print("\nHibernate cancelled.")
 
+    # Ask the user if they want to download another model
+    another_choice = input("\nDo you want to download another model? (Y/N, default: N): ").strip().upper()
+    if another_choice == 'Y':
+        main()  # Restart the main process to allow downloading another model
+    else:
+        print("Exiting the script. Goodbye!")
+
 
 def extract_models(html):
     """Extract models from HTML content"""
