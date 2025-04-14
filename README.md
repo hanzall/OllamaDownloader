@@ -173,15 +173,42 @@ The Ollama Model Downloader script requires the `ollama` command-line tool to fu
 The Ollama tool is essential for interacting with the model library, allowing the script to list available models and manage downloads efficiently. 
 
 
-![image](https://github.com/user-attachments/assets/c98440b3-d313-469e-bccf-350e5d03b0a5)
+## Screenshots
 
-![image](https://github.com/user-attachments/assets/f8e4a366-0bf4-4a96-8926-79e3aa30d81b)
+Here are some screenshots showcasing the functionality of the Ollama Model Downloader:
 
-![image](https://github.com/user-attachments/assets/66552d12-2511-46e0-b004-abec9d0bc7a6)
+### 1. Local Model Detection
+The script displays a list of models fetched from the Ollama library, allowing users to filter and select models for download.
 
-![image](https://github.com/user-attachments/assets/a1f29cd9-c30f-4eea-93c6-978adc120f3c)
+![Model List Display](https://github.com/user-attachments/assets/c98440b3-d313-469e-bccf-350e5d03b0a5)
 
-![image](https://github.com/user-attachments/assets/783a93d4-226c-401b-954e-afbc7eacde35)
+### 2. Filtered Model List
+Users can filter models by entering keywords, making it easier to find specific models.
+Models already available locally are highlighted, helping users avoid redundant downloads.
+
+![Filtered Model List](https://github.com/user-attachments/assets/f8e4a366-0bf4-4a96-8926-79e3aa30d81b)
+
+### 3. Multiple Download Choices
+The script allows users to select multiple models for batch downloading. It provides detailed feedback during the process, including the current model being downloaded, the number of attempts, and the overall progress.
+
+![Multiple Download Choices](https://github.com/user-attachments/assets/66552d12-2511-46e0-b004-abec9d0bc7a6)
+
+### 4. Model Download Details
+
+Before starting the download, the script highlights the models selected for download in green, providing a clear visual indication of the models being processed. This helps users confirm their selections before the download begins.
+Once the download starts, the script provides detailed feedback, including the current model being downloaded, the number of attempts, and the overall progress.
+
+![Highlighted Models in Green](https://github.com/user-attachments/assets/3f2a1b2c-4d5e-4c8e-9b3e-8f7c2d3b5a6a)
+
+### 6. Download Progress and Completion Details
+After each model is downloaded, the script provides detailed feedback, including the model's name, size, and other information retrieved from the Ollama command-line tool. This ensures users have a clear understanding of the process and results.
+
+![Download Progress](https://github.com/user-attachments/assets/a1f29cd9-c30f-4eea-93c6-978adc120f3c)
+
+### 5. Hibernate Option
+If the hibernate option was enabled in the previous steps, users can cancel it during the countdown provided after the downloads are completed.
+
+![Hibernate Option](https://github.com/user-attachments/assets/783a93d4-226c-401b-954e-afbc7eacde35)
 
 
 
