@@ -191,11 +191,11 @@ Models already available locally are highlighted, allowing users to avoid redund
 ### 3. Multiple Download Choices
 The script allows users to select multiple models for batch downloading. It provides detailed feedback during the process, including the current model being downloaded, the number of attempts, and the overall progress.
 Before starting the download, the script highlights the models selected for download in green, providing a clear visual indication of the models being processed. This helps users confirm their selections before the download begins.
-Once the download starts, the script provides detailed feedback, including the current model being downloaded, the number of attempts, and the overall progress.
 
 ![Multiple Download Choices](https://github.com/user-attachments/assets/66552d12-2511-46e0-b004-abec9d0bc7a6)
 
 ### 4. Download Progress and Completion Details
+Once the download starts, the script provides detailed feedback, including the current model being downloaded, the number of attempts, and the overall progress.
 After each model is downloaded, the script provides detailed feedback, including the model's name, size, and other information retrieved from the Ollama command-line tool. This ensures users have a clear understanding of the process and results.
 
 ![Download Progress](https://github.com/user-attachments/assets/a1f29cd9-c30f-4eea-93c6-978adc120f3c)
