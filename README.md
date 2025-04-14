@@ -112,9 +112,6 @@ To create an executable from the Python script, you can use `PyInstaller`:
 - The script saves the downloaded web page to `modelListPage.html` in the current directory.
 - Use Ctrl+C to cancel hibernation if selected.
 
-## License
-This project is licensed under the MIT License.
-
 ## Script Functionality
 
 The Ollama Model Downloader script automates the process of downloading models from the Ollama library. Here's how it works:
@@ -204,3 +201,6 @@ After each model is downloaded, the script provides detailed feedback, including
 If the hibernate option was enabled in the previous steps, users can cancel it during the countdown provided after the downloads are completed.
 
 ![Hibernate Option](https://github.com/user-attachments/assets/783a93d4-226c-401b-954e-afbc7eacde35)
+
+## License
+This project is licensed under the MIT License.
