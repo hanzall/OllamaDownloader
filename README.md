@@ -19,7 +19,7 @@ This script is designed to download models from the Ollama library. It provides 
 
 *Note: The `requests` library is no longer required as the script now uses Python's built-in `http.client` and `urllib` modules for HTTP requests.*
 
-## Installation
+## Preparing the Requirements
 ### Windows
 #### Option 1: Using Git
 1. **Install Python**: Download and install Python from the [official website](https://www.python.org/downloads/). Ensure you check the option to add Python to your PATH during installation.
@@ -27,8 +27,8 @@ This script is designed to download models from the Ollama library. It provides 
 3. **Clone the Repository**:
    Open Command Prompt and run:
    ```bash
-   git clone <repository-url>
-   cd <repository-directory>
+   git clone https://github.com/hanzall/OllamaDownloader
+   cd OllamaDownloader
    ```
 
 #### Option 2: Without Using Git
@@ -61,8 +61,8 @@ This script is designed to download models from the Ollama library. It provides 
 3. **Clone the Repository**:
    Open a terminal and run:
    ```bash
-   git clone <repository-url>
-   cd <repository-directory>
+   git clone https://github.com/hanzall/OllamaDownloader
+   cd OllamaDownloader
    ```
 
 #### Option 2: Without Using Git
