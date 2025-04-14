@@ -171,3 +171,22 @@ The Ollama Model Downloader script requires the `ollama` command-line tool to fu
 - Ensure that the `ollama` command is accessible from your terminal or command prompt. You may need to add it to your system's PATH if it's not automatically configured.
 
 The Ollama tool is essential for interacting with the model library, allowing the script to list available models and manage downloads efficiently. 
+
+
+![image](https://github.com/user-attachments/assets/c98440b3-d313-469e-bccf-350e5d03b0a5)
+
+![image](https://github.com/user-attachments/assets/f8e4a366-0bf4-4a96-8926-79e3aa30d81b)
+
+![image](https://github.com/user-attachments/assets/66552d12-2511-46e0-b004-abec9d0bc7a6)
+
+![image](https://github.com/user-attachments/assets/a1f29cd9-c30f-4eea-93c6-978adc120f3c)
+
+![image](https://github.com/user-attachments/assets/783a93d4-226c-401b-954e-afbc7eacde35)
+
+
+
+
+
+
+
+
