@@ -7,7 +7,7 @@ This script is designed to download models from the Ollama library. It provides 
 - **Multiple Model Selection for Download**: Users can select multiple models to download by entering their numbers separated by commas, enabling batch downloads for efficiency.
 - **Filter Models for Download**: Enter a keyword to filter models by name or parameter, simplifying the selection process for downloading.
 - **Select Models to Download**: Choose a model to download from the filtered list.
-- **Local Model Detection for Downloads**: Identifies models already available locally to avoid redundant downloads.
+- **Local Model Detection**: Identifies models already available locally to avoid redundant downloads.
 - **Retry Mechanism for Downloads**: Automatically retries failed downloads up to three times with a 10-second delay between attempts. Skips the model if retries are exhausted and continues with the next one.
 - **Enhanced Download Feedback**: Provides detailed feedback on download status, including the current model being downloaded, number of attempts, and success or failure details.
 - **Hibernate Option**: Optionally hibernate the system after downloading, with a countdown to cancel if needed.
