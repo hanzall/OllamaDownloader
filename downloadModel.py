@@ -126,18 +126,23 @@ def main():
     hibernate_choice = input("Do you want to hibernate after the downloads? (Y/N, default: Y): ").strip().upper()
     should_hibernate = hibernate_choice != 'N'
 
+    # Infinite loop to retry models
+    retry_count = {}
+    total_models = len(selected_models)
+
     # Download the selected models one by one
     retry_count = {}
     total_models = len(selected_models)
-    while selected_models:
-        modelparam_selected = selected_models.pop(0)
-        current_model_index = total_models - len(selected_models)
+
+    while selected_models:  # Keep going until all models are processed
+        modelparam_selected = selected_models[0]  # Always work on the first model in the list
+        current_model_index = total_models - len(selected_models) + 1
         exec_count = retry_count.get(modelparam_selected, 0) + 1
         retry_count[modelparam_selected] = exec_count
 
         print(f"Downloading \033[92m{modelparam_selected}\033[0m ({current_model_index}/{total_models}), Attempt: {exec_count}")
         result = subprocess.run(['ollama', 'pull', modelparam_selected])
-        
+
         if result.returncode == 0:
             print(f"Command succeeded for \033[92m{modelparam_selected}\033[0m after {exec_count} attempt(s).")
 
@@ -147,15 +152,17 @@ def main():
                 print(f"\033[90m{show_result.stdout}\033[0m")
             else:
                 print("Failed to show model details.")
+
+            selected_models.pop(0)  # Remove the successfully downloaded model from the front of the list
+            retry_count.pop(modelparam_selected, None)  # Clear retry count for this model
+            
+            if selected_models:  # If there are more models to process
+                print(f"\nMoving to next model. {len(selected_models)} models remaining.")
         else:
             print(f"\nCommand failed for {modelparam_selected}.")
-            if exec_count < 3:
-                print("Retrying in 10 seconds...")
-                time.sleep(10)  # Wait for 10 seconds before retrying
-                print("Retrying now...")
-                selected_models.append(modelparam_selected)  # Add to the end of the list for retry
-            else:
-                print(f"Max retries reached for {modelparam_selected}. Skipping.")
+            print("Retrying in 10 seconds...")
+            time.sleep(10)  # Wait for 10 seconds before retrying
+            print("Retrying now...")
 
     if should_hibernate:
         print("\nPress Ctrl+C to cancel hibernation...")
