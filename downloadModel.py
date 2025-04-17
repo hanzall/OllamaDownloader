@@ -108,46 +108,56 @@ def main():
                             except:
                                 return False
 
+                        # Process models until the list is empty (resumes from the point of interruption)
                         while selected_models:  # Keep going until all models are processed
-                            modelparam_selected = selected_models[0]  # Always work on the first model in the list
-                            current_model_index = total_models - len(selected_models) + 1
-                            exec_count = retry_count.get(modelparam_selected, 0) + 1
-                            retry_count[modelparam_selected] = exec_count
+                            try:
+                                modelparam_selected = selected_models[0]  # Always work on the first model in the list
+                                current_model_index = total_models - len(selected_models) + 1
+                                exec_count = retry_count.get(modelparam_selected, 0) + 1
+                                retry_count[modelparam_selected] = exec_count
 
-                            print(f"Downloading \033[92m{modelparam_selected}\033[0m ({current_model_index}/{total_models}), Attempt: {exec_count}")
-                            result = subprocess.run(['ollama', 'pull', modelparam_selected])
+                                print(f"Downloading \033[92m{modelparam_selected}\033[0m ({current_model_index}/{total_models}), Attempt: {exec_count}")
+                                result = subprocess.run(['ollama', 'pull', modelparam_selected])
 
-                            if result.returncode == 0:
-                                print(f"\033[92m{modelparam_selected}\033[0m downloaded successfully in {exec_count} attempt(s).")
+                                if result.returncode == 0:
+                                    print(f"\033[92m{modelparam_selected}\033[0m downloaded successfully in {exec_count} attempt(s).")
 
-                                print("\nModel details:")
-                                show_result = subprocess.run(['ollama', 'show', modelparam_selected], capture_output=True, text=True)
-                                if show_result.returncode == 0:
-                                    print(f"\033[90m{show_result.stdout}\033[0m")
+                                    print("\nModel details:")
+                                    show_result = subprocess.run(['ollama', 'show', modelparam_selected], capture_output=True, text=True)
+                                    if show_result.returncode == 0:
+                                        print(f"\033[90m{show_result.stdout}\033[0m")
+                                    else:
+                                        print("Failed to show model details.")
+
+                                    selected_models.pop(0)  # Remove the successfully downloaded model
+                                    retry_count.pop(modelparam_selected, None)  # Clear retry count
+
+                                    if selected_models:
+                                        print(f"\nMoving to next model. {len(selected_models)} models remaining.")
                                 else:
-                                    print("Failed to show model details.")
-
-                                selected_models.pop(0)  # Remove the successfully downloaded model
-                                retry_count.pop(modelparam_selected, None)  # Clear retry count
-
-                                if selected_models:
-                                    print(f"\nMoving to next model. {len(selected_models)} models remaining.")
-                            else:
-                                print(f"\nDownload interrupted for {modelparam_selected}.")
-                                if not check_internet():
-                                    print("Internet connection lost. Waiting for restoration...")
-                                    while not check_internet():
-                                        print("Waiting for internet connection...", end='\r')
-                                        time.sleep(5)
-                                    print("\nInternet connection restored. Retrying...")
+                                    print(f"\nDownload interrupted for {modelparam_selected}.")
+                                    if not check_internet():
+                                        print("Internet connection lost. Waiting for restoration...")
+                                        while not check_internet():
+                                            print("Waiting for internet connection...", end='\r')
+                                            time.sleep(5)
+                                        print("\nInternet connection restored. Retrying...")
+                                    else:
+                                        print("Failure not related to internet connection.")
+                                        if exec_count >= 3:
+                                            print(f"Moving {modelparam_selected} to end of queue after 3 failed attempts.")
+                                            selected_models.pop(0)  # Remove from front
+                                            selected_models.append(modelparam_selected)  # Add to end
+                                        time.sleep(5)  # Wait before retry
+                            except KeyboardInterrupt:
+                                resume_choice = input("\nDownload interrupted. Do you want to resume from the current position? (Y/N, default: Y): ").strip().upper()
+                                if resume_choice == '' or resume_choice == 'Y':
+                                    print("Resuming download...")
+                                    continue  # Continue with the same selected_models list
                                 else:
-                                    print("Failure not related to internet connection.")
-                                    if exec_count >= 3:
-                                        print(f"Moving {modelparam_selected} to end of queue after 3 failed attempts.")
-                                        selected_models.pop(0)  # Remove from front
-                                        selected_models.append(modelparam_selected)  # Add to end
-                                    time.sleep(5)  # Wait before retry
-
+                                    print("Exiting download process.")
+                                    return
+                        
                         if should_hibernate:
                             print("\nPress Ctrl+C to cancel hibernation...")
                             try:
