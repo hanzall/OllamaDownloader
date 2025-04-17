@@ -19,60 +19,6 @@ else:
 # Define the local file to save the downloaded web page
 web_page_file = os.path.join(current_dir, "modelListPage.html")
 
-def select_models(model_params):
-    """Prompt user to select models by index from model_params."""
-    while True:
-        try:
-            modelparam_indices = input("Enter the comma-separated \033[92mnumbers\033[0m corresponding to the models you wish to download (or enter \033[95m0\033[0m to change the filter, or \033[95ma\033[0m to select all): ").strip()
-            if modelparam_indices.lower() == 'a':
-                return model_params
-            if modelparam_indices in ['0', '']:
-                return None  # Signal to change filter
-            if not re.match(r'^\d+(,\d+)*$', modelparam_indices):
-                print("Invalid input. Please enter only numbers separated by commas, 'a' to select all, or 0 to change the filter.")
-                continue
-            selected_indices = [int(index.strip()) for index in modelparam_indices.split(',')]
-            if all(1 <= index <= len(model_params) for index in selected_indices):
-                return [model_params[index - 1] for index in selected_indices]
-            print(f"\033[91mInvalid selection. Valid range is 1 to {len(model_params)}.\033[0m")
-        except ValueError:
-            print(f"\033[91mInvalid input. Please enter valid numbers separated by commas.\033[0m")
-
-def confirm_models(selected_models, descriptions):
-    """Show selected models and ask for confirmation or reselection."""
-    while True:
-        os.system('cls' if os.name == 'nt' else 'clear')
-        print("\n\033[1mConfirm Selected Models:\033[0m")
-        for i, model in enumerate(selected_models, 1):
-            base_model = model.split(':')[0]
-            desc = descriptions.get(base_model, "No description available")
-            print(f"\n{i}. \033[92m{model}\033[0m")
-            print(f"   \033[90m{desc}\033[0m")
-        print("\n\033[94mOptions:\033[0m")
-        print("  \033[92m[Y]\033[0m - Confirm and start download (default)")
-        print("  \033[93m[N]\033[0m - Select different models")
-        print("  \033[91m[F]\033[0m - Change filter and search again")
-        confirm = input("\nYour choice (Y/N/F, default: Y): ").strip().upper()
-        if confirm == '' or confirm == 'Y':
-            return 'confirm'
-        elif confirm == 'N':
-            return 'reselect'
-        elif confirm == 'F':
-            return 'filter'
-        else:
-            print("\n\033[91mInvalid input. Please enter Y, N, or F.\033[0m")
-            time.sleep(1)
-
-def extract_model_data(html_content):
-    """Extract models, parameters and descriptions from HTML content"""
-    models = extract_models(html_content)
-    parameters = {}
-    descriptions = {}
-    if models:
-        for model in models:
-            parameters[model] = extract_parameters(html_content, model)
-            descriptions[model] = extract_description(html_content, model)
-    return models, parameters, descriptions
 
 def main():
 
@@ -232,6 +178,62 @@ def main():
                     break  # Go back to filter selection
             if selected_models is None or action == 'filter':
                 break
+
+
+def select_models(model_params):
+    """Prompt user to select models by index from model_params."""
+    while True:
+        try:
+            modelparam_indices = input("Enter the comma-separated \033[92mnumbers\033[0m corresponding to the models you wish to download (or enter \033[95m0\033[0m to change the filter, or \033[95ma\033[0m to select all): ").strip()
+            if modelparam_indices.lower() == 'a':
+                return model_params
+            if modelparam_indices in ['0', '']:
+                return None  # Signal to change filter
+            if not re.match(r'^\d+(,\d+)*$', modelparam_indices):
+                print("Invalid input. Please enter only numbers separated by commas, 'a' to select all, or 0 to change the filter.")
+                continue
+            selected_indices = [int(index.strip()) for index in modelparam_indices.split(',')]
+            if all(1 <= index <= len(model_params) for index in selected_indices):
+                return [model_params[index - 1] for index in selected_indices]
+            print(f"\033[91mInvalid selection. Valid range is 1 to {len(model_params)}.\033[0m")
+        except ValueError:
+            print(f"\033[91mInvalid input. Please enter valid numbers separated by commas.\033[0m")
+
+def confirm_models(selected_models, descriptions):
+    """Show selected models and ask for confirmation or reselection."""
+    while True:
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print("\n\033[1mConfirm Selected Models:\033[0m")
+        for i, model in enumerate(selected_models, 1):
+            base_model = model.split(':')[0]
+            desc = descriptions.get(base_model, "No description available")
+            print(f"\n{i}. \033[92m{model}\033[0m")
+            print(f"   \033[90m{desc}\033[0m")
+        print("\n\033[94mOptions:\033[0m")
+        print("  \033[92m[Y]\033[0m - Confirm and start download (default)")
+        print("  \033[93m[N]\033[0m - Select different models")
+        print("  \033[91m[F]\033[0m - Change filter and search again")
+        confirm = input("\nYour choice (Y/N/F, default: Y): ").strip().upper()
+        if confirm == '' or confirm == 'Y':
+            return 'confirm'
+        elif confirm == 'N':
+            return 'reselect'
+        elif confirm == 'F':
+            return 'filter'
+        else:
+            print("\n\033[91mInvalid input. Please enter Y, N, or F.\033[0m")
+            time.sleep(1)
+
+def extract_model_data(html_content):
+    """Extract models, parameters and descriptions from HTML content"""
+    models = extract_models(html_content)
+    parameters = {}
+    descriptions = {}
+    if models:
+        for model in models:
+            parameters[model] = extract_parameters(html_content, model)
+            descriptions[model] = extract_description(html_content, model)
+    return models, parameters, descriptions
 
 def extract_models(html):
     """Extract models from HTML content"""
