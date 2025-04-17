@@ -198,7 +198,13 @@ def select_models(model_params):
     """Prompt user to select models by index from model_params."""
     while True:
         try:
-            modelparam_indices = input("Enter the comma-separated \033[92mnumbers\033[0m corresponding to the models you wish to download (or enter \033[95m0\033[0m to change the filter, or \033[95ma\033[0m to select all): ").strip()
+            modelparam_indices = input(
+                "\nEnter the comma-separated \033[92mnumbers\033[0m corresponding to the models you wish to download\n"
+                "    (Examples: '1,2,3' or '1,5,7' or '1' for a single model)\n"
+                "    Enter \033[95m0\033[0m to change the filter\n"
+                "    Enter \033[95ma\033[0m to select all displayed models\n"
+                "\nYour selection: "
+            ).strip()
             if modelparam_indices.lower() == 'a':
                 return model_params
             if modelparam_indices in ['0', '']:
