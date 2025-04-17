@@ -4,14 +4,17 @@ This script is designed to download models from the Ollama library. It provides 
 
 ## Features
 
-- **Multiple Model Selection for Download**: Users can select multiple models to download by entering their numbers separated by commas, enabling batch downloads for efficiency.
-- **Filter Models for Download**: Enter a keyword to filter models by name or parameter, simplifying the selection process for downloading.
+- **Filter Models**: Enter a keyword to filter models by name or parameter, simplifying the selection process for downloading.
 - **Select Models to Download**: Choose a model to download from the filtered list.
+- **Multiple Model Selection for Download**: Users can select multiple models to download by entering their numbers separated by commas, enabling batch downloads for efficiency.
 - **Local Model Detection**: Identifies models already available locally to avoid redundant downloads.
 - **Retry Mechanism for Downloads**: Automatically retries failed downloads up to three times with a 10-second delay between attempts. Skips the model if retries are exhausted and continues with the next one.
 - **Enhanced Download Feedback**: Provides detailed feedback on download status, including the current model being downloaded, number of attempts, and success or failure details.
 - **Hibernate Option**: Optionally hibernate the system after downloading, with a countdown to cancel if needed.
 - **No External Dependencies for HTTP Requests**: The script now uses Python's built-in `http.client` and `urllib` modules for fetching model lists, eliminating the need for the `requests` library.
+- **Progress Tracking**: Displays the progress of each model download, including the size and estimated time remaining.
+- **Error Handling**: Improved error handling for network issues and invalid model selections, providing users with clear messages and options to retry or cancel.
+- **User-Friendly Interface**: Enhanced user interface for better interaction, including clearer prompts and instructions during the download process.
 
 ## Requirements
 - Python 3.x
