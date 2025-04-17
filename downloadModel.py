@@ -70,9 +70,9 @@ def main():
         os.system('cls' if os.name == 'nt' else 'clear')
 
         while True:
-            filter_keyword = input("Enter a \033[92mkeyword\033[0m to filter models (press \033[95mEnter\033[0m to show all, or \033[95m'h'\033[0m for help): ").strip()
+            filter_keyword = input("Enter a \033[92mkeyword\033[0m to filter models (press \033[95mEnter\033[0m to show all, or \033[95m'?'\033[0m for help): ").strip()
 
-            if filter_keyword.lower() == 'h':
+            if filter_keyword.lower() == '?':
                 showHelp()
                 continue  # Prompt the user again after showing help
 
