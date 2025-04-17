@@ -19,39 +19,97 @@ else:
 # Define the local file to save the downloaded web page
 web_page_file = os.path.join(current_dir, "modelListPage.html")
 
+def select_models(model_params):
+    """Prompt user to select models by index from model_params."""
+    while True:
+        try:
+            modelparam_indices = input("Enter the comma-separated \033[92mnumbers\033[0m corresponding to the models you wish to download (or enter \033[95m0\033[0m to change the filter, or \033[95ma\033[0m to select all): ").strip()
+            if modelparam_indices.lower() == 'a':
+                return model_params
+            if modelparam_indices in ['0', '']:
+                return None  # Signal to change filter
+            if not re.match(r'^\d+(,\d+)*$', modelparam_indices):
+                print("Invalid input. Please enter only numbers separated by commas, 'a' to select all, or 0 to change the filter.")
+                continue
+            selected_indices = [int(index.strip()) for index in modelparam_indices.split(',')]
+            if all(1 <= index <= len(model_params) for index in selected_indices):
+                return [model_params[index - 1] for index in selected_indices]
+            print(f"\033[91mInvalid selection. Valid range is 1 to {len(model_params)}.\033[0m")
+        except ValueError:
+            print(f"\033[91mInvalid input. Please enter valid numbers separated by commas.\033[0m")
+
+def confirm_models(selected_models, descriptions):
+    """Show selected models and ask for confirmation or reselection."""
+    while True:
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print("\n\033[1mConfirm Selected Models:\033[0m")
+        for i, model in enumerate(selected_models, 1):
+            base_model = model.split(':')[0]
+            desc = descriptions.get(base_model, "No description available")
+            print(f"\n{i}. \033[92m{model}\033[0m")
+            print(f"   \033[90m{desc}\033[0m")
+        print("\n\033[94mOptions:\033[0m")
+        print("  \033[92m[Y]\033[0m - Confirm and start download (default)")
+        print("  \033[93m[N]\033[0m - Select different models")
+        print("  \033[91m[F]\033[0m - Change filter and search again")
+        confirm = input("\nYour choice (Y/N/F, default: Y): ").strip().upper()
+        if confirm == '' or confirm == 'Y':
+            return 'confirm'
+        elif confirm == 'N':
+            return 'reselect'
+        elif confirm == 'F':
+            return 'filter'
+        else:
+            print("\n\033[91mInvalid input. Please enter Y, N, or F.\033[0m")
+            time.sleep(1)
+
+def extract_model_data(html_content):
+    """Extract models, parameters and descriptions from HTML content"""
+    models = extract_models(html_content)
+    parameters = {}
+    descriptions = {}
+    if models:
+        for model in models:
+            parameters[model] = extract_parameters(html_content, model)
+            descriptions[model] = extract_description(html_content, model)
+    return models, parameters, descriptions
+
 def main():
-    # Ask the user whether to load the local HTML or download a new one
+
+    # Initialize variables
+    parameters = {}
+    descriptions = {}
+
     if os.path.exists(web_page_file):
-        print("\033[33mLocal model list file found.")
-        choice = input("Enter \033[95m'q'\033[33m to quit, \033[95m'd'\033[33m to download a new list, or press \033[95mEnter\033[33m to use the local list (default)\033[0m:")
-        if choice.upper() == 'D':
-            html_content = get_model_list()
-        elif choice == '':
-            print("Using the local model list...")
+        print("\033[33mLocal model list found. Loading local list...")
+        try:
+            # First load the local model list
             with open(web_page_file, 'r', encoding='utf-8') as f:
                 html_content = f.read()
-        elif choice.upper() == 'Q':
-            print("Quitting the script.")
-            exit(0)
+            # Extract data from local file
+            models, parameters, descriptions = extract_model_data(html_content)
+        except Exception as e:
+            print(f"\033[91mError reading local model list: {e}\033[0m")
+            print("Downloading a fresh list...")
+            html_content = get_model_list()
+            models, parameters, descriptions = extract_model_data(html_content)
         else:
-            print("Invalid choice. Exiting.")
-            exit(1)
+            # Ask the user whether to load the local HTML or download a new one
+            choice = input("Press \033[95mEnter\033[33m to continue with your local list (default) or enter \033[95m'd'\033[33m to download a fresh list: ")
+            if choice.upper() == 'D':
+                html_content = get_model_list()
+                models, parameters, descriptions = extract_model_data(html_content)
+            elif choice != '':
+                print("Invalid choice. Exiting.")
+                exit(1)
     else:
         print("No local model list found. Downloading a new list...")
         html_content = get_model_list()
+        models, parameters, descriptions = extract_model_data(html_content)
 
-    # Extract models and parameters
-    models = extract_models(html_content)
     if not models:
         print("No models found in the HTML content.")
         exit(1)
-    
-    # Initialize parameters dictionary
-    parameters = {}
-
-    # Extract parameters for each model individually
-    for model in models:
-        parameters[model] = extract_parameters(html_content, model)
 
     # Get list of local models
     local_result = subprocess.run(['ollama', 'list'], capture_output=True, text=True)
@@ -75,140 +133,131 @@ def main():
 
         # Clear the screen for better readability
         os.system('cls' if os.name == 'nt' else 'clear')
-        model_params = display_models(models, parameters, localmodels, filter_keyword if filter_keyword else None)
+        model_params = display_models(models, parameters, localmodels, descriptions, filter_keyword if filter_keyword else None)
 
         if not model_params:
             continue  # Prompt the user to enter a new filter keyword
 
         print(f"\nTotal models found: {len(model_params)}")
 
-
         while True:
-            try:
-                modelparam_indices = input("Enter the \033[92mnumbers\033[0m of the models you want to download (comma-separated, or enter \033[95m0\033[0m to change the filter): ").strip()
-                if modelparam_indices == '0':
-                    break  # Go back to filter input
-                if not re.match(r'^\d+(,\d+)*$', modelparam_indices):
-                    print("Invalid input. Please enter only numbers separated by commas.")
-                    continue
-                selected_indices = [int(index.strip()) for index in modelparam_indices.split(',')]
-                if all(1 <= index <= len(model_params) for index in selected_indices):
-                    break
-                print(f"\033[91mInvalid selection. Valid range is 1 to {len(model_params)}.\033[0m")
-            except ValueError:
-                print(f"\033[91mInvalid input. Please enter valid numbers separated by commas.\033[0m")
+            selected_models = select_models(model_params)
+            if selected_models is None:
+                break  # User wants to change filter
+            while True:
+                action = confirm_models(selected_models, descriptions)
+                if action == 'confirm':
+                    hibernate_choice = input("Do you want to hibernate after the downloads? (Y/N, default: Y): ").strip().upper()
+                    should_hibernate = hibernate_choice == '' or hibernate_choice != 'N'
 
-        if modelparam_indices != '0':
-            break  # Exit the loop if valid models are selected
+                    # Infinite loop to retry models
+                    retry_count = {}
+                    total_models = len(selected_models)
 
-    selected_models = [model_params[index - 1] for index in selected_indices]
+                    def check_internet():
+                        """Check internet connectivity by trying to connect to ollama.com"""
+                        try:
+                            # conn = http.client.HTTPSConnection("ollama.com", timeout=5)
+                            conn = http.client.HTTPSConnection("registry.ollama.ai", timeout=5)
+                            conn.request("HEAD", "/")
+                            return conn.getresponse().status == 200
+                        except:
+                            return False
 
+                    while selected_models:  # Keep going until all models are processed
+                        modelparam_selected = selected_models[0]  # Always work on the first model in the list
+                        current_model_index = total_models - len(selected_models) + 1
+                        exec_count = retry_count.get(modelparam_selected, 0) + 1
+                        retry_count[modelparam_selected] = exec_count
 
-    # List the selected models before starting the download
-    # print("\n\033[92mSelected models for download:\033[0m")
-    print("Selected models for download:")
-    columns = 4
-    max_length = max(len(model) for model in selected_models)
-    col_width = max_length + 5  # Add padding for better readability
-    items_per_col = ceil(len(selected_models) / columns)
-    for row in range(items_per_col):
-        line = ""
-        for col in range(columns):
-            index = row + (col * items_per_col)
-            if index < len(selected_models):
-                model = selected_models[index]
-                padded_item = f"\033[92m{model:<{col_width}}\033[0m"
-                line += padded_item
-        print(line.rstrip())
-        
+                        print(f"Downloading \033[92m{modelparam_selected}\033[0m ({current_model_index}/{total_models}), Attempt: {exec_count}")
+                        result = subprocess.run(['ollama', 'pull', modelparam_selected])
 
+                        if result.returncode == 0:
+                            print(f"\033[92m{modelparam_selected}\033[0m downloaded successfully in {exec_count} attempt(s).")
 
-    hibernate_choice = input("Do you want to hibernate after the downloads? (Y/N, default: Y): ").strip().upper()
-    should_hibernate = hibernate_choice != 'N'
+                            print("\nModel details:")
+                            show_result = subprocess.run(['ollama', 'show', modelparam_selected], capture_output=True, text=True)
+                            if show_result.returncode == 0:
+                                print(f"\033[90m{show_result.stdout}\033[0m")
+                            else:
+                                print("Failed to show model details.")
 
-    # Infinite loop to retry models
-    retry_count = {}
-    total_models = len(selected_models)
+                            selected_models.pop(0)  # Remove the successfully downloaded model
+                            retry_count.pop(modelparam_selected, None)  # Clear retry count
+                            
+                            if selected_models:
+                                print(f"\nMoving to next model. {len(selected_models)} models remaining.")
+                        else:
+                            print(f"\nDownload interrupted for {modelparam_selected}.")
+                            if not check_internet():
+                                print("Internet connection lost. Waiting for restoration...")
+                                while not check_internet():
+                                    print("Waiting for internet connection...", end='\r')
+                                    time.sleep(5)
+                                print("\nInternet connection restored. Retrying...")
+                            else:
+                                print("Failure not related to internet connection.")
+                                if exec_count >= 3:
+                                    print(f"Moving {modelparam_selected} to end of queue after 3 failed attempts.")
+                                    selected_models.pop(0)  # Remove from front
+                                    selected_models.append(modelparam_selected)  # Add to end
+                                time.sleep(5)  # Wait before retry
 
-    # Download the selected models one by one
-    retry_count = {}
-    total_models = len(selected_models)
-
-    def check_internet():
-        """Check internet connectivity by trying to connect to ollama.com"""
-        try:
-            conn = http.client.HTTPSConnection("ollama.com", timeout=5)
-            conn.request("HEAD", "/")
-            return conn.getresponse().status == 200
-        except:
-            return False
-
-    while selected_models:  # Keep going until all models are processed
-        modelparam_selected = selected_models[0]  # Always work on the first model in the list
-        current_model_index = total_models - len(selected_models) + 1
-        exec_count = retry_count.get(modelparam_selected, 0) + 1
-        retry_count[modelparam_selected] = exec_count
-
-        print(f"Downloading \033[92m{modelparam_selected}\033[0m ({current_model_index}/{total_models}), Attempt: {exec_count}")
-        result = subprocess.run(['ollama', 'pull', modelparam_selected])
-
-        if result.returncode == 0:
-            print(f"Command succeeded for \033[92m{modelparam_selected}\033[0m after {exec_count} attempt(s).")
-
-            print("\nModel details:")
-            show_result = subprocess.run(['ollama', 'show', modelparam_selected], capture_output=True, text=True)
-            if show_result.returncode == 0:
-                print(f"\033[90m{show_result.stdout}\033[0m")
-            else:
-                print("Failed to show model details.")
-
-            selected_models.pop(0)  # Remove the successfully downloaded model
-            retry_count.pop(modelparam_selected, None)  # Clear retry count
-            
-            if selected_models:
-                print(f"\nMoving to next model. {len(selected_models)} models remaining.")
-        else:
-            print(f"\nCommand failed for {modelparam_selected}.")
-            if not check_internet():
-                print("Internet connection lost. Waiting for restoration...")
-                while not check_internet():
-                    print("Waiting for internet connection...", end='\r')
-                    time.sleep(5)
-                print("\nInternet connection restored. Retrying...")
-            else:
-                print("Failure not related to internet connection.")
-                if exec_count >= 3:
-                    print(f"Moving {modelparam_selected} to end of queue after 3 failed attempts.")
-                    selected_models.pop(0)  # Remove from front
-                    selected_models.append(modelparam_selected)  # Add to end
-                time.sleep(5)  # Wait before retry
-
-    if should_hibernate:
-        print("\nPress Ctrl+C to cancel hibernation...")
-        try:
-            for i in range(120, 0, -1):
-                print(f"\rHibernating in {i} seconds...", end='', flush=True)
-                time.sleep(1)
-            print("\nHibernating now...")
-            if os.name == 'nt':  # Windows
-                os.system('shutdown /h')
-            else:  # Linux/Unix
-                os.system('systemctl hibernate')
-        except KeyboardInterrupt:
-            print("\nHibernate cancelled.")
-    # Ask the user if they want to download another model
-    another_choice = input("\nDo you want to download another model? (Y/N, default: N): ").strip().upper()
-    if another_choice == 'Y':
-        main()  # Restart the main process to allow downloading another model
-    else:
-        print("Exiting the script. Goodbye!")
-
+                    if should_hibernate:
+                        print("\nPress Ctrl+C to cancel hibernation...")
+                        try:
+                            for i in range(120, 0, -1):
+                                print(f"\rHibernating in {i} seconds...", end='', flush=True)
+                                time.sleep(1)
+                            print("\nHibernating now...")
+                            if os.name == 'nt':  # Windows
+                                os.system('shutdown /h')
+                            else:  # Linux/Unix
+                                os.system('systemctl hibernate')
+                        except KeyboardInterrupt:
+                            print("\nHibernate cancelled.")
+                    # Ask the user if they want to download another model
+                    another_choice = input("\nDo you want to download another model? (Y/N, default: Y): ").strip().upper()
+                    if another_choice == '' or another_choice == 'Y':
+                        main()  # Restart the main process to allow downloading another model
+                    else:
+                        print("Exiting the script. Goodbye!")
+                    return  # Exit after download
+                elif action == 'reselect':
+                    selected_models = select_models(model_params)
+                    if selected_models is None:
+                        break  # User wants to change filter
+                elif action == 'filter':
+                    break  # Go back to filter selection
+            if selected_models is None or action == 'filter':
+                break
 
 def extract_models(html):
     """Extract models from HTML content"""
     model_regex = r'<div x-test-model-title title="([^"]+)"'
     matches = re.findall(model_regex, html)
     return matches
+
+def extract_description(html, model):
+    """Extract description for a specific model"""
+    escaped_model = re.escape(model)
+    # Find the specific <li> element containing this model
+    pattern = f'<li[^>]*x-test-model[^>]*>(?:(?!<li[^>]*x-test-model[^>]*>).)*?<div[^>]*title="{escaped_model}".*?</li>'
+    model_block = re.search(pattern, html, re.DOTALL)
+    
+    if model_block:
+        # Look for the description paragraph with specific classes that follows the title
+        desc_regex = r'<p class="max-w-lg[^"]*break-words text-neutral-800[^"]*">(.*?)</p>'
+        desc_match = re.search(desc_regex, model_block.group(), re.DOTALL)
+        if desc_match:
+            description = desc_match.group(1)
+            # Remove HTML tags if any remain
+            description = re.sub(r'<[^>]+>', '', description)
+            # Clean up whitespace
+            description = ' '.join(description.split())
+            return description
+    return "No description available"
 
 def extract_parameters(html, model):
     """Extract parameters related to each model"""
@@ -252,7 +301,7 @@ def get_model_list():
         exit(1)
 
 
-def display_models(models, parameters, localmodels, filter_keyword=None):
+def display_models(models, parameters, localmodels, descriptions, filter_keyword=None):
     """
     Display models with each parameter as a separate entry.
     Optionally filter models by a compound expression of model:parameter or by parameter size.
