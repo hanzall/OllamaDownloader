@@ -134,6 +134,15 @@ def main():
     retry_count = {}
     total_models = len(selected_models)
 
+    def check_internet():
+        """Check internet connectivity by trying to connect to ollama.com"""
+        try:
+            conn = http.client.HTTPSConnection("ollama.com", timeout=5)
+            conn.request("HEAD", "/")
+            return conn.getresponse().status == 200
+        except:
+            return False
+
     while selected_models:  # Keep going until all models are processed
         modelparam_selected = selected_models[0]  # Always work on the first model in the list
         current_model_index = total_models - len(selected_models) + 1
@@ -153,16 +162,26 @@ def main():
             else:
                 print("Failed to show model details.")
 
-            selected_models.pop(0)  # Remove the successfully downloaded model from the front of the list
-            retry_count.pop(modelparam_selected, None)  # Clear retry count for this model
+            selected_models.pop(0)  # Remove the successfully downloaded model
+            retry_count.pop(modelparam_selected, None)  # Clear retry count
             
-            if selected_models:  # If there are more models to process
+            if selected_models:
                 print(f"\nMoving to next model. {len(selected_models)} models remaining.")
         else:
             print(f"\nCommand failed for {modelparam_selected}.")
-            print("Retrying in 10 seconds...")
-            time.sleep(10)  # Wait for 10 seconds before retrying
-            print("Retrying now...")
+            if not check_internet():
+                print("Internet connection lost. Waiting for restoration...")
+                while not check_internet():
+                    print("Waiting for internet connection...", end='\r')
+                    time.sleep(5)
+                print("\nInternet connection restored. Retrying...")
+            else:
+                print("Failure not related to internet connection.")
+                if exec_count >= 3:
+                    print(f"Moving {modelparam_selected} to end of queue after 3 failed attempts.")
+                    selected_models.pop(0)  # Remove from front
+                    selected_models.append(modelparam_selected)  # Add to end
+                time.sleep(5)  # Wait before retry
 
     if should_hibernate:
         print("\nPress Ctrl+C to cancel hibernation...")
